@@ -11,27 +11,23 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay, classification_report
 )
 
-# --------- PAGE CONFIG (use dark theme from Streamlit settings) ----------
 st.set_page_config(
     page_title="Birds Activity Model – XAI Dashboard",
     layout="wide"
 )
 
-# --------- SIDEBAR ----------
-st.sidebar.title("🦉 Birds XAI App")
+st.sidebar.title(" Birds XAI App")
 st.sidebar.write("Use this panel to explore the model and data.")
 
 show_data = st.sidebar.checkbox("Show raw data (head)", value=True)
 
 
-# --------- LOAD DATA ----------
 @st.cache_data
 def load_data():
     return pd.read_csv("Birds_cleaned.csv")
 
 df = load_data()
 
-# --------- MAIN TITLE ----------
 st.title("Birds Activity Model – XAI Dashboard")
 st.write("This app loads the Birds dataset, trains Logistic Regression, and visualizes feature importance.")
 
@@ -41,7 +37,6 @@ if show_data:
     st.write(df.head())
 
 
-# --------- PREPROCESSING ----------
 df["y"] = df["active__recovered"].map({"Y": 1, "N": 0}).fillna(0).astype(int)
 
 # Handle rare model categories
@@ -61,7 +56,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
 )
 
-# --------- MODEL TRAINING (Optimized Logistic Regression) ----------
 param_grid = {"C": [0.01, 0.1, 1, 10, 100]}
 log_reg = LogisticRegression(max_iter=1000, class_weight="balanced")
 
@@ -83,7 +77,6 @@ precision = precision_score(y_test, y_pred_best)
 recall = recall_score(y_test, y_pred_best)
 f1 = f1_score(y_test, y_pred_best)
 
-# --------- FEATURE IMPORTANCE DATAFRAME ----------
 feature_names = X_train.columns
 coefficients = best_log_reg.coef_.ravel()
 
@@ -97,15 +90,14 @@ recovery_features = ["model_recovery_rate_overall", "model_month_recovery_rate"]
 recovery_df = coef_df[coef_df["Feature"].isin(recovery_features)]
 other_df = coef_df[~coef_df["Feature"].isin(recovery_features)]
 
-# --------- TABS (like Excel sheets) ----------
+# TABS LIKE EXCEL SHEET
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Model Performance",
-    "🔥 Feature Importance",
-    "📌 Recovery Features",
-    "📉 Other Models"
+    "Model Performance",
+    "Feature Importance",
+    "Recovery Features",
+    "Other Models"
 ])
 
-# --------- TAB 1: MODEL PERFORMANCE ----------
 with tab1:
     st.header("Model Performance (Optimized Logistic Regression)")
 
@@ -120,7 +112,6 @@ with tab1:
     ConfusionMatrixDisplay.from_estimator(best_log_reg, X_test, y_test, cmap="Blues", ax=ax)
     st.pyplot(fig)
 
-# --------- TAB 2: GLOBAL FEATURE IMPORTANCE ----------
 with tab2:
     st.header("Coefficient-Based Feature Importance")
 
@@ -135,7 +126,6 @@ with tab2:
     ax.set_title("Top 10 Feature Importances")
     st.pyplot(fig)
 
-# --------- TAB 3: RECOVERY FEATURES ----------
 with tab3:
     st.header("Recovery Features: Comparison Plot")
 
@@ -156,7 +146,6 @@ with tab3:
     else:
         st.warning("Recovery features not found in the feature list.")
 
-# --------- TAB 4: OTHER MODEL FEATURES ----------
 with tab4:
     st.header("Other Tag Model Coefficients")
 
