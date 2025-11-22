@@ -124,5 +124,4 @@ ax.set_ylabel("Coefficient Value")
 ax.grid(True, linestyle="--", alpha=0.5)
 st.pyplot(fig)
 
-st.success("ntqb2-4-2-m was the most used model across many months.
-ntqb-3-2 and ntqb-2 had a 100% recovery rate — all tags were found.")
+st.success("All visualizations generated successfully!")
